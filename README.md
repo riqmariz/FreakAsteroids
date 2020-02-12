@@ -7,6 +7,7 @@ Foram utilizados as artes visuais de projetos da asset store, por isso e por raz
 
 •Real Stars Skybox
 •2DSpaceShooterExample
+•Text Mesh Pro
 
 Coloque-os em Assets->Imports
 e pronto. Dependencias importadas.
