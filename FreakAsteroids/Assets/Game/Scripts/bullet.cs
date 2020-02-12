@@ -7,25 +7,69 @@ public class bullet : MonoBehaviour
 {
     public float speed;
     public float destroyDelay;
-    private Vector3 direction;
+    private Vector2 direction;
     private MovementComponent _movementComponent;
     private Camera mainCam;
     private Ship playerShip;
+    private Vector2 rotated;
+    private bool changeMovementDir=false;
 
-    void Start()
+    public virtual void Start()
     {
         if (!SetMovementComponent())
             Debug.LogWarning("WARNING! MovementComponent wasn't successfully set\n" +
                              "Actor won't be able to move.");
-        
         direction = transform.up;
         mainCam = Camera.main;
+    }
+
+    public void setDirection(Vector3 dir)
+    {
+        direction = dir;
+    }
+
+    public Vector3 getDirection()
+    {
+        return direction;
+    }
+
+    public void ChangeDirection(float num)
+    {
+        this.rotated = transform.up;
+
+        /*
+        Debug.Log("antes de rotacionar: " + this.rotated);
+        var sin = Mathf.Sin(angle * Mathf.Deg2Rad);
+        var cos = Mathf.Cos(angle * Mathf.Deg2Rad);
+         
+        var tx = this.rotated.x;
+        var ty = this.rotated.y;
+        this.rotated = new Vector2((cos * tx) - (sin * ty), (sin * tx) + (cos * ty));
+        Debug.Log("depois de rotacionar: " + rotated);
+        */
+        if (num > 0)
+        {
+            rotated = new Vector2(0.75f,1f);
+        }
+        else
+        {
+            rotated = new Vector2(-0.75f,1f);
+        }
+
+        changeMovementDir = true;
+
     }
     
     void Update()
     {
-        _movementComponent.Move(direction.x * speed * Time.deltaTime,direction.y * speed * Time.deltaTime);
-        //transform.position += direction * speed * Time.deltaTime;
+        if (!changeMovementDir)
+        {
+            _movementComponent.Move(direction.x * speed * Time.deltaTime,direction.y * speed * Time.deltaTime);
+        }
+        else
+        {
+            _movementComponent.Move(rotated.x * speed * Time.deltaTime,rotated.y * speed * Time.deltaTime);
+        }
     }
 
     private void FixedUpdate()
@@ -71,7 +115,7 @@ public class bullet : MonoBehaviour
         playerShip = ship;
     }
     
-    private void OnTriggerEnter2D(Collider2D other)
+    public virtual void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Asteroid"))
         {
@@ -81,7 +125,7 @@ public class bullet : MonoBehaviour
         }
     }
 
-    void DestroyBullet()
+    public void DestroyBullet()
     {
         Destroy(gameObject, 0.0f);
     }

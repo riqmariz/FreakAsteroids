@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 public class Ship : MonoBehaviour
 {
     public GameObject firepoint;
     public GameObject bullet;
+    public GameObject poweredBullet;
+    public float poweredBulletDegree;
     public float shipSpeed;
     public float rotationSpeed = 180f;
     private Camera mainCam;
@@ -15,6 +20,8 @@ public class Ship : MonoBehaviour
     private int lives = 3;
     [NonSerialized] 
     public int score = 0;
+    public bool powerUp;
+    private bool firstPowerUp;
 
     private void Start()
     {
@@ -118,6 +125,8 @@ public class Ship : MonoBehaviour
         transform.position = new Vector2(0f, 0f);
         transform.eulerAngles = new Vector3(0, 180f, 0);
         _movementComponent.StopMovement();
+        powerUp = false;
+        firstPowerUp = false;
     }
 
     public void ResetLives()
@@ -127,11 +136,54 @@ public class Ship : MonoBehaviour
 
     void Shoot()
     {
-        GameObject Bullet = Instantiate(bullet, new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
-        Bullet.SetActive(true);
-        bullet script = Bullet.GetComponent<bullet>();
-        script.SetPlayerShip(this);
-        script.DestroyBulletDelayed();
+        if (!powerUp)
+        {
+            GameObject Bullet = Instantiate(bullet, new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
+            Bullet.SetActive(true);
+            bullet script = Bullet.GetComponent<bullet>();
+            script.SetPlayerShip(this);
+            script.DestroyBulletDelayed();
+        }
+        else
+        {
+            if (!firstPowerUp)
+            {
+                Invoke("deactivatePowerUp",10f);
+                firstPowerUp = true;
+            }
+            
+            GameObject Bullet = Instantiate(poweredBullet,
+                new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
+            Bullet.SetActive(true);
+            bullet script = Bullet.GetComponent<bullet>();
+            script.SetPlayerShip(this);
+            script.DestroyBulletDelayed();
+
+            GameObject BulletEsq = Instantiate(poweredBullet,
+                new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
+            bullet scriptEsq = BulletEsq.GetComponent<bullet>();
+            scriptEsq.ChangeDirection(poweredBulletDegree);
+            scriptEsq.SetPlayerShip(this);
+            scriptEsq.DestroyBulletDelayed();
+            BulletEsq.SetActive(true);
+            
+            GameObject BulletDir = Instantiate(poweredBullet,
+                new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
+            bullet scriptDir = BulletDir.GetComponent<bullet>();
+            scriptDir.ChangeDirection(-poweredBulletDegree);
+            scriptDir.SetPlayerShip(this);
+            scriptDir.DestroyBulletDelayed();
+            BulletDir.SetActive(true);
+
+
+        }
     }
+
+    public void deactivatePowerUp()
+    {
+        powerUp = false;
+        firstPowerUp = false;
+    }
+    
 }
 

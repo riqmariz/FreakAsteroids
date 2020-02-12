@@ -21,7 +21,7 @@ public class AsteroidController : MonoBehaviour
     private float finalSpeedY;
     private Collider2D collider;
 
-    void Start()
+    public virtual void Start()
     {
 
         gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
@@ -39,7 +39,7 @@ public class AsteroidController : MonoBehaviour
         
         mainCam = Camera.main;
         collider = GetComponent<Collider2D>();
-        rotationZ = Random.Range(-maxRotation, maxRotation);
+        rotationZ = RandomRotation();
 
         rb = asteroid.GetComponent<Rigidbody2D>();
 
@@ -58,7 +58,12 @@ public class AsteroidController : MonoBehaviour
         finalSpeedY = speedY * dirY;
 
     }
-    
+
+    public virtual float RandomRotation()
+    {
+        return Random.Range(-maxRotation, maxRotation);
+    }
+
     public bool SetMovementComponent()
     {
         _movementComponent = GetComponent<MovementComponent>();
@@ -88,7 +93,7 @@ public class AsteroidController : MonoBehaviour
         }
     }
     
-    public void DestroyAsteroid()
+    public virtual void DestroyAsteroid()
     {
         if (_generation < 3)
         {
@@ -149,9 +154,5 @@ public class AsteroidController : MonoBehaviour
         gameController.AsteroidDestroyed(generation);
         Destroy(gameObject, 0.01f);
     }
-
-    public void DestroySilent()
-    {
-        Destroy(gameObject, 0.00f);
-    }
+    
 }

@@ -10,9 +10,11 @@ public class GameController : MonoBehaviour
     public int startAsteroids;
     public int increaseAsteroidsPerLevel;
     public GameObject asteroid;
+    public GameObject freakAsteroid;
     public int minStartPositionXAsteroid;
     public int maxStartPositionXAsteroid;
     public float startPositionYAsteroid;
+    public int scoreToAppearFreakAsteroid;
 
     public TextMeshProUGUI scoreInGame;
     public GameObject finish;
@@ -23,6 +25,8 @@ public class GameController : MonoBehaviour
     private bool levelUp;
     private bool asteroidsCreated;
     private Ship ship;
+    private int _scoreToAppearFreakAsteroid;
+    private int _freaksInvoked=0;
 
     void Start()
     {
@@ -30,6 +34,7 @@ public class GameController : MonoBehaviour
         totalNumAsteroids = startAsteroids;
         ship = GameObject.FindWithTag("Player").GetComponent<Ship>();
         scoreInGame.gameObject.SetActive(true);
+        _scoreToAppearFreakAsteroid = scoreToAppearFreakAsteroid;
         for(int i=0;i<transform.childCount;i++)
         {
             transform.GetChild(i).gameObject.SetActive(true);
@@ -48,8 +53,10 @@ public class GameController : MonoBehaviour
         ship.ResetShip();
         ship.ResetLives();
         ship.score = 0;
+        _scoreToAppearFreakAsteroid = scoreToAppearFreakAsteroid;
         scoreInGame.gameObject.SetActive(true);
         ship.gameObject.SetActive(true);
+        _freaksInvoked=0;
         
         for(int i=0;i<lives.transform.childCount;i++)
         {
@@ -125,6 +132,19 @@ public class GameController : MonoBehaviour
     private void FixedUpdate()
     {
         scoreInGame.text = "Score: "+ship.score;
+        if (ship.score >= _scoreToAppearFreakAsteroid)
+        {
+            GameObject freak = Instantiate(freakAsteroid,
+                new Vector2(Random.Range(minStartPositionXAsteroid, maxStartPositionXAsteroid), startPositionYAsteroid),
+                transform.rotation);
+            freak.transform.parent = transform;
+            currentNumAsteroids++;
+            freak.SetActive(true);
+            _freaksInvoked++;
+            FreakAsteroid script = freak.gameObject.GetComponent<FreakAsteroid>();
+            script.setLife((_freaksInvoked*script.life));
+            _scoreToAppearFreakAsteroid += _scoreToAppearFreakAsteroid + scoreToAppearFreakAsteroid;
+        }
     }
 
     public void AsteroidDestroyed(int generation)
