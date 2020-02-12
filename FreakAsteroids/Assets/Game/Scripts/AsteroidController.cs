@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class AsteroidController : MonoBehaviour
 {
@@ -23,7 +25,7 @@ public class AsteroidController : MonoBehaviour
     {
 
         gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
-        
+                
         if (!SetMovementComponent())
         {
             Debug.LogWarning("WARNING! MovementComponent wasn't successfully set\n" +
@@ -78,12 +80,11 @@ public class AsteroidController : MonoBehaviour
         _movementComponent.Move(finalSpeedX*Time.deltaTime,finalSpeedY*Time.deltaTime);
     }
 
-    void OnCollisionEnter(Collision collisionInfo)
+    void OnCollisionEnter2D(Collision2D other)
     {
-
-        if (collisionInfo.collider.name == "Player")
+        if (other.collider.CompareTag("Player"))
         {
-            collisionInfo.collider.gameObject.GetComponent<Ship>().ShipGotHitted();
+            other.collider.gameObject.GetComponent<Ship>().ShipGotHitted();
         }
     }
     
