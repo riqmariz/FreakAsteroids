@@ -24,6 +24,7 @@ public class Ship : MonoBehaviour
             Debug.LogWarning("WARNING! MovementComponent wasn't successfully set\n" +
                                  "Actor won't be able to move.");
         }
+        ResetShip();
     }
 
     private void FixedUpdate()
@@ -51,10 +52,22 @@ public class Ship : MonoBehaviour
     public void ShipGotHitted()
     {
         lives--;
+        gameObject.SetActive(false);
+        ResetShip();
         if (lives == 0)
         {
             Console.WriteLine("Game Over!");
         }
+        else
+        {
+            Invoke("activateShip",1.5f);
+        }
+        
+    }
+
+    public void activateShip()
+    {
+        gameObject.SetActive(true);
     }
     
     public bool SetMovementComponent()
@@ -68,7 +81,7 @@ public class Ship : MonoBehaviour
 
     private void ControlShipRotation()
     {
-        transform.Rotate(0, 0, Input.GetAxis("Horizontal") * -rotationSpeed * Time.deltaTime);
+        transform.Rotate(0, 0, Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime);
     }
 
     private void CheckPosition()
