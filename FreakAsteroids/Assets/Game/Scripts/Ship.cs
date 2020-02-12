@@ -11,12 +11,14 @@ public class Ship : MonoBehaviour
     public float rotationSpeed = 180f;
     private Camera mainCam;
     private MovementComponent _movementComponent;
+    private GameController _gameController;
     private int lives = 3;
     [NonSerialized] 
     public int score = 0;
 
     private void Start()
     {
+        _gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
         mainCam = Camera.main;
         bullet.SetActive(false);
         if (!SetMovementComponent())
@@ -51,12 +53,14 @@ public class Ship : MonoBehaviour
 
     public void ShipGotHitted()
     {
+        
         lives--;
+        _gameController.RemoveLife(lives);
         gameObject.SetActive(false);
         ResetShip();
         if (lives == 0)
         {
-            Console.WriteLine("Game Over!");
+            _gameController.Finish();
         }
         else
         {
@@ -114,6 +118,11 @@ public class Ship : MonoBehaviour
         transform.position = new Vector2(0f, 0f);
         transform.eulerAngles = new Vector3(0, 180f, 0);
         _movementComponent.StopMovement();
+    }
+
+    public void ResetLives()
+    {
+        lives = 3;
     }
 
     void Shoot()

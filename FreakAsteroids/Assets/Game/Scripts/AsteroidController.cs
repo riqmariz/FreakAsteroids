@@ -105,6 +105,7 @@ public class AsteroidController : MonoBehaviour
         {
             float scaleSize = 0.5f;
             GameObject AsteroidClone = Instantiate(asteroid, new Vector2(transform.position.x, transform.position.y), transform.rotation);
+            AsteroidClone.transform.parent = gameController.transform;
             AsteroidClone.transform.localScale = new Vector3(AsteroidClone.transform.localScale.x * scaleSize, AsteroidClone.transform.localScale.y * scaleSize, AsteroidClone.transform.localScale.z * scaleSize);
             AsteroidClone.GetComponent<AsteroidController>().SetGeneration(newGeneration);
             AsteroidClone.SetActive(true);
