@@ -73,11 +73,8 @@ public class bullet : MonoBehaviour
     
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("triggered");
-        
         if (other.CompareTag("Asteroid"))
         {
-            Debug.Log("hit something");
             playerShip.score = playerShip.score + 100;
             other.gameObject.GetComponent<AsteroidController>().DestroyAsteroid();
             DestroyBullet();
