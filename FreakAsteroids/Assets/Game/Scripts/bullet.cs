@@ -10,6 +10,7 @@ public class bullet : MonoBehaviour
     private Vector3 direction;
     private MovementComponent _movementComponent;
     private Camera mainCam;
+    private Ship playerShip;
 
     void Start()
     {
@@ -65,12 +66,20 @@ public class bullet : MonoBehaviour
             return false;
     }
 
+    public void SetPlayerShip(Ship ship)
+    {
+        playerShip = ship;
+    }
+    
     private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("triggered");
-        if ((other.CompareTag("Asteroid")) || (other.CompareTag("UFO")))
+        
+        if (other.CompareTag("Asteroid"))
         {
             Debug.Log("hit something");
+            playerShip.score = playerShip.score + 100;
+            other.gameObject.GetComponent<AsteroidController>().DestroyAsteroid();
             DestroyBullet();
         }
     }
