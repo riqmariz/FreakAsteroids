@@ -11,6 +11,9 @@ public class Ship : MonoBehaviour
     public float rotationSpeed = 180f;
     private Camera mainCam;
     private MovementComponent _movementComponent;
+    private int lives = 3;
+    [NonSerialized] 
+    public int score = 0;
 
     private void Start()
     {
@@ -43,6 +46,15 @@ public class Ship : MonoBehaviour
             _movementComponent.Move(dir.x*shipSpeed*Time.deltaTime,dir.y*shipSpeed*Time.deltaTime);
         }
         
+    }
+
+    public void ShipGotHitted()
+    {
+        lives--;
+        if (lives == 0)
+        {
+            Console.WriteLine("Game Over!");
+        }
     }
     
     public bool SetMovementComponent()
@@ -95,7 +107,9 @@ public class Ship : MonoBehaviour
     {
         GameObject Bullet = Instantiate(bullet, new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
         Bullet.SetActive(true);
-        Bullet.GetComponent<bullet>().DestroyBulletDelayed();
+        bullet script = Bullet.GetComponent<bullet>();
+        script.SetPlayerShip(this);
+        script.DestroyBulletDelayed();
     }
 }
 
