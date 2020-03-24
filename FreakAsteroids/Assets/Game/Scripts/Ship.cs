@@ -14,14 +14,20 @@ public class Ship : MonoBehaviour
     public float poweredBulletDegree;
     public float shipSpeed;
     public float rotationSpeed = 180f;
+
     private Camera mainCam;
     private MovementComponent _movementComponent;
     private GameController _gameController;
     private int lives = 3;
-    [NonSerialized] 
-    public int score = 0;
+    [NonSerialized] public int score = 0;
     public bool powerUp;
     private bool firstPowerUp;
+
+
+    private bool _shoot;
+    private bool _thrust;
+    private bool _rotate;
+    private float _inputHorizontal;
 
     private void Start()
     {
@@ -31,36 +37,56 @@ public class Ship : MonoBehaviour
         if (!SetMovementComponent())
         {
             Debug.LogWarning("WARNING! MovementComponent wasn't successfully set\n" +
-                                 "Actor won't be able to move.");
+                             "Actor won't be able to move.");
         }
+
         ResetShip();
     }
 
     private void FixedUpdate()
     {
-        ControlShipRotation();
         CheckPosition();
+
+        Shoot();
+
+        ControlShipRotation();
+
+        Thrust();
+    }
+
+    private void Thrust()
+    {
+        if (_thrust)
+        {
+            Vector2 dir = transform.up;
+            _movementComponent.Move(dir.x * shipSpeed * Time.fixedDeltaTime, dir.y * shipSpeed * Time.fixedDeltaTime);
+            _thrust = false;
+        }
     }
 
     private void Update()
     {
+        ReadInput();
+    }
+
+    private void ReadInput()
+    {
         if (Input.GetKeyDown("space"))
         {
-            Shoot();
+            _shoot = true;
         }
-        
-        Vector2 dir = transform.up;
+
         //float vertical = Input.GetAxis("Vertical");
         if (Input.GetKey(KeyCode.UpArrow))
         {
-            _movementComponent.Move(dir.x*shipSpeed*Time.deltaTime,dir.y*shipSpeed*Time.deltaTime);
+            _thrust = true;
         }
-        
+
+        _inputHorizontal =  Input.GetAxis("Horizontal");
     }
 
     public void ShipGotHitted()
     {
-        
         lives--;
         _gameController.RemoveLife(lives);
         gameObject.SetActive(false);
@@ -71,16 +97,15 @@ public class Ship : MonoBehaviour
         }
         else
         {
-            Invoke("activateShip",1.5f);
+            Invoke("activateShip", 1.5f);
         }
-        
     }
 
     public void activateShip()
     {
         gameObject.SetActive(true);
     }
-    
+
     public bool SetMovementComponent()
     {
         _movementComponent = GetComponent<MovementComponent>();
@@ -92,12 +117,11 @@ public class Ship : MonoBehaviour
 
     private void ControlShipRotation()
     {
-        transform.Rotate(0, 0, Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime);
+        transform.Rotate(0, 0, _inputHorizontal * rotationSpeed * Time.fixedDeltaTime);
     }
 
     private void CheckPosition()
     {
-
         float sceneWidth = mainCam.orthographicSize * 2 * mainCam.aspect;
         float sceneHeight = mainCam.orthographicSize * 2;
 
@@ -110,10 +134,17 @@ public class Ship : MonoBehaviour
         {
             transform.position = new Vector2(sceneLeftEdge, transform.position.y);
         }
-        if (transform.position.x < sceneLeftEdge) { transform.position = new Vector2(sceneRightEdge, transform.position.y); } if (transform.position.y > sceneTopEdge)
+
+        if (transform.position.x < sceneLeftEdge)
+        {
+            transform.position = new Vector2(sceneRightEdge, transform.position.y);
+        }
+
+        if (transform.position.y > sceneTopEdge)
         {
             transform.position = new Vector2(transform.position.x, sceneBottomEdge);
         }
+
         if (transform.position.y < sceneBottomEdge)
         {
             transform.position = new Vector2(transform.position.x, sceneTopEdge);
@@ -136,46 +167,51 @@ public class Ship : MonoBehaviour
 
     void Shoot()
     {
-        if (!powerUp)
+        if (_shoot)
         {
-            GameObject Bullet = Instantiate(bullet, new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
-            Bullet.SetActive(true);
-            bullet script = Bullet.GetComponent<bullet>();
-            script.SetPlayerShip(this);
-            script.DestroyBulletDelayed();
-        }
-        else
-        {
-            if (!firstPowerUp)
+            if (!powerUp)
             {
-                Invoke("deactivatePowerUp",10f);
-                firstPowerUp = true;
+                GameObject Bullet = Instantiate(bullet,
+                    new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
+                Bullet.SetActive(true);
+                bullet script = Bullet.GetComponent<bullet>();
+                script.SetPlayerShip(this);
+                script.DestroyBulletDelayed();
+            }
+            else
+            {
+                if (!firstPowerUp)
+                {
+                    Invoke("deactivatePowerUp", 10f);
+                    firstPowerUp = true;
+                }
+
+                GameObject Bullet = Instantiate(poweredBullet,
+                    new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
+                Bullet.SetActive(true);
+                bullet script = Bullet.GetComponent<bullet>();
+                script.SetPlayerShip(this);
+                script.DestroyBulletDelayed();
+
+                GameObject BulletEsq = Instantiate(poweredBullet,
+                    new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
+                bullet scriptEsq = BulletEsq.GetComponent<bullet>();
+                scriptEsq.ChangeDirection(poweredBulletDegree);
+                scriptEsq.SetPlayerShip(this);
+                scriptEsq.DestroyBulletDelayed();
+                BulletEsq.SetActive(true);
+
+                GameObject BulletDir = Instantiate(poweredBullet,
+                    new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
+                bullet scriptDir = BulletDir.GetComponent<bullet>();
+                scriptDir.ChangeDirection(-poweredBulletDegree);
+                scriptDir.SetPlayerShip(this);
+                scriptDir.DestroyBulletDelayed();
+                BulletDir.SetActive(true);
             }
             
-            GameObject Bullet = Instantiate(poweredBullet,
-                new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
-            Bullet.SetActive(true);
-            bullet script = Bullet.GetComponent<bullet>();
-            script.SetPlayerShip(this);
-            script.DestroyBulletDelayed();
-
-            GameObject BulletEsq = Instantiate(poweredBullet,
-                new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
-            bullet scriptEsq = BulletEsq.GetComponent<bullet>();
-            scriptEsq.ChangeDirection(poweredBulletDegree);
-            scriptEsq.SetPlayerShip(this);
-            scriptEsq.DestroyBulletDelayed();
-            BulletEsq.SetActive(true);
             
-            GameObject BulletDir = Instantiate(poweredBullet,
-                new Vector2(firepoint.transform.position.x, firepoint.transform.position.y), transform.rotation);
-            bullet scriptDir = BulletDir.GetComponent<bullet>();
-            scriptDir.ChangeDirection(-poweredBulletDegree);
-            scriptDir.SetPlayerShip(this);
-            scriptDir.DestroyBulletDelayed();
-            BulletDir.SetActive(true);
-
-
+            _shoot = false;
         }
     }
 
@@ -184,6 +220,4 @@ public class Ship : MonoBehaviour
         powerUp = false;
         firstPowerUp = false;
     }
-    
 }
-
