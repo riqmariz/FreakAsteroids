@@ -58,10 +58,12 @@ public class Asteroid2 : MonoBehaviour, IHealth
         float randomSpeedX = Random.Range(minSpeed, maxSpeed);
         float randomSpeedY = Random.Range(minSpeed, maxSpeed);
         
-        Vector2 speed = new Vector2(randomSpeedX,randomSpeedY);
-        Vector2 dir = new Vector2(dirX,dirY);
+       var magnitude = 1;
+        Vector2 speed = new Vector2(randomSpeedX,randomSpeedY) * magnitude;
        Debug.Log("speed: "+speed);
-        _rb.AddForce(dir * speed, ForceMode2D.Impulse);
+        Vector2 dir = new Vector2(dirX,dirY);
+       
+       _rb.AddForce(dir * speed, ForceMode2D.Impulse);
     }
 
 
@@ -120,12 +122,11 @@ public class Asteroid2 : MonoBehaviour, IHealth
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.collider.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
-            other.gameObject.GetComponent<IHealth>().TakeDamage(1);
+            other.GetComponent<IHealth>().TakeDamage(1);
         }
     }
-    
 }
