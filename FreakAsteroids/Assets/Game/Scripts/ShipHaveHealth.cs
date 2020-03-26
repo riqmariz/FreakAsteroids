@@ -29,7 +29,7 @@ public class ShipHaveHealth : MonoBehaviour, IHaveHealth
     {
         gameObject.SetActive(false);
         transform.position = new Vector2(0f, 0f);
-        transform.eulerAngles = new Vector3(0, 180f, 0);
+        transform.eulerAngles = new Vector3(0, 0, 0);
         Invoke("ActivateShip",1.5f);
     }
 
