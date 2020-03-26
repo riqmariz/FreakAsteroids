@@ -109,7 +109,7 @@ public class Asteroid2 : MonoBehaviour, IHealth
         int newGeneration = Generation + 1;
         for (int i = 1; i <= asteroidsNum; i++)
         {
-            float scaleSize = 0.5f;
+            float scaleSize = 0.75f;
             
             GameObject asteroidClone = Instantiate(gameObject, new Vector2(transform.position.x, transform.position.y), transform.rotation);
             //AsteroidClone.transform.parent = gameController.transform;
