@@ -129,7 +129,6 @@ public class AsteroidController : MonoBehaviour
         float sceneLeftEdge = (sceneRightEdge * -1);
         float sceneTopEdge = (sceneHeight / 2);
         float sceneBottomEdge = (sceneTopEdge * -1);
-        
 
         if (transform.position.x-size.x > sceneRightEdge)
         {

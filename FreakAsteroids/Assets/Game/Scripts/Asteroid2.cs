@@ -18,6 +18,7 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
     public int Generation { get; set; }
 
     private Rigidbody2D _rb;
+    private Collider2D _collider2D;
     private float _rotation;
 
     protected int health = 1;
@@ -33,6 +34,7 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
     private void Awake()
     {
         _rb =GetComponent<Rigidbody2D>();
+        _collider2D = GetComponent<Collider2D>();
     }
 
     private void Start()
@@ -71,16 +73,16 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
     {
         RotateAsteroid();
     }
+    public void FixedUpdate()
+    {
+        transform.position = GameUtility.CheckPositionAndTeleport(transform.position,_collider2D);
+    }
 
     private void RotateAsteroid()
     {
         transform.Rotate(_rotation * Time.deltaTime * transform.forward);
     }
 
-    public void FixedUpdate()
-    {
-        transform.position = GameUtility.CheckPositionAndTeleport(transform.position);
-    }
 
     public void TakeDamage(int value)
     {
