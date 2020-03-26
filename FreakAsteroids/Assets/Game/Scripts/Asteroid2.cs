@@ -1,37 +1,79 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Numerics;
+using UnityEngine;
+using Random = UnityEngine.Random;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
-public class Asteroid2 : MonoBehaviour, ITakeDamage
+public class Asteroid2 : MonoBehaviour, IHealth
 {
-    private int _generation;
-    public int Generation
-    {
-        get { return _generation; }
-        set { _generation = value; }
-    }
-    
-    private MovementComponent _movementComponent;
-    private Rigidbody2D _rb;
-    private float rotation;
-    private float impulseForce;
+    [SerializeField]
+    private float minSpeed;
+    [SerializeField]
+    private float maxSpeed;
 
+    [SerializeField] 
+    private float maxRotation;
+
+    public int Generation { get; set; }
+
+    private Rigidbody2D _rb;
+    private float _rotation;
+
+    protected int health = 1;
+    public int Health
+    {
+        get { return health; }
+        set { health = value; }
+    }
+
+    public event Action<float> OnHPChanged = delegate { };
+    public event Action OnDied = delegate { };
+    
     private void Awake()
     {
-        _movementComponent = GetComponent<MovementComponent>();
+        _rb =GetComponent<Rigidbody2D>();
     }
+
+    private void Start()
+    {
+        ApplyForceInARandomDirection();
+        _rotation = RandomRotation();
+    }
+
+    private float RandomRotation()
+    {
+        return Random.Range(-maxRotation, maxRotation);
+    }
+
+    private void ApplyForceInARandomDirection()
+    {
+        //later check if changing to float make it better
+        int randomDirectionX = Random.Range(0, 2);
+        var dirX = randomDirectionX == 1 ?  1 : -1;
+
+        int randomDirectionY = Random.Range(0, 2);
+        var dirY = randomDirectionY == 1 ? 1 : -1;
+        
+        float randomSpeedX = Random.Range(minSpeed, maxSpeed);
+        float randomSpeedY = Random.Range(minSpeed, maxSpeed);
+        
+        Vector2 speed = new Vector2(randomSpeedX,randomSpeedY);
+        Vector2 dir = new Vector2(dirX,dirY);
+       Debug.Log("speed: "+speed);
+       Debug.Log("dir: "+dir);
+        _rb.AddForce(dir * speed, ForceMode2D.Impulse);
+    }
+
 
     public void Update()
     {
-        MoveAndRotate();
+        RotateAsteroid();
     }
 
-    private void MoveAndRotate()
+    private void RotateAsteroid()
     {
-        /*
-        asteroid.transform.Rotate(new Vector3(0, 0, rotationZ) * Time.deltaTime);
-        _movementComponent.Move(finalSpeedX*Time.deltaTime,finalSpeedY*Time.deltaTime);
-        */
-        transform.Rotate(rotation * Time.deltaTime * transform.forward);
-        _rb.AddForce(impulseForce * transform.up,ForceMode2D.Impulse);
+        transform.Rotate(_rotation * Time.deltaTime * transform.forward);
     }
 
     public void FixedUpdate()
@@ -41,33 +83,41 @@ public class Asteroid2 : MonoBehaviour, ITakeDamage
 
     public void TakeDamage(int value)
     {
-        if (_generation < 3)
+        health -= value;
+        OnHPChanged(health);
+        if (health <= 0)
         {
-            CreateSmallAsteriods(2);
+            DestroyAsteroid();
         }
-
-        DestroyAsteroid();
     }
 
     private void DestroyAsteroid()
     {
+        OnDied();
+        if (Generation < 3)
+        {
+            CreateSmallAsteriods(2);
+        }
+        
         //gameController.AsteroidDestroyed(generation);
         Destroy(gameObject, 0.01f);
     }
 
     void CreateSmallAsteriods(int asteroidsNum)
     {
-        int newGeneration = _generation + 1;
+        int newGeneration = Generation + 1;
         for (int i = 1; i <= asteroidsNum; i++)
         {
             float scaleSize = 0.5f;
-            /*
-            GameObject AsteroidClone = Instantiate(asteroid, new Vector2(transform.position.x, transform.position.y), transform.rotation);
-            AsteroidClone.transform.parent = gameController.transform;
-            AsteroidClone.transform.localScale = new Vector3(AsteroidClone.transform.localScale.x * scaleSize, AsteroidClone.transform.localScale.y * scaleSize, AsteroidClone.transform.localScale.z * scaleSize);
-            AsteroidClone.GetComponent<Asteroid2>().Generation = newGeneration;
-            AsteroidClone.SetActive(true);
-            */
+            
+            GameObject asteroidClone = Instantiate(gameObject, new Vector2(transform.position.x, transform.position.y), transform.rotation);
+            //AsteroidClone.transform.parent = gameController.transform;
+            var localScale = asteroidClone.transform.localScale;
+            localScale = new Vector3(localScale.x * scaleSize, localScale.y * scaleSize, localScale.z * scaleSize);
+            asteroidClone.transform.localScale = localScale;
+            asteroidClone.GetComponent<Asteroid2>().Generation = newGeneration;
+            asteroidClone.SetActive(true);
+            
         }
     }
 
@@ -78,5 +128,5 @@ public class Asteroid2 : MonoBehaviour, ITakeDamage
             other.gameObject.GetComponent<IHealth>().TakeDamage(1);
         }
     }
-
+    
 }

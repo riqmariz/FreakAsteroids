@@ -37,7 +37,6 @@ public class ShipEngine : MonoBehaviour
     {
         transform.position = GameUtility.CheckPositionAndTeleport(transform.position);
         ControlShipRotation();
-        Debug.Log("speed: "+_rb.velocity);
     }
 
     private void ControlShipRotation()

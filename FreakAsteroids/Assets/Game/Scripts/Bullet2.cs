@@ -24,6 +24,16 @@ public class Bullet2 : MonoBehaviour
         _willSelfDestruct = Time.time + timeToSelfDestruct;
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Asteroid"))
+        {
+            var damageComponent = other.GetComponent<ITakeDamage>();
+            damageComponent.TakeDamage(1);
+            Destroy(gameObject);
+        }
+    }
+
     public void Update()
     {
         transform.position = GameUtility.CheckPositionAndTeleport(transform.position);

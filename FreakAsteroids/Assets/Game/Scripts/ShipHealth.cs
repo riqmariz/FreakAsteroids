@@ -13,7 +13,7 @@ public class ShipHealth : MonoBehaviour, IHealth
     public void TakeDamage(int value)
     {
         health -= value;
-        OnHPChanged(value);
+        OnHPChanged(health);
 
         if (health > 0)
         {

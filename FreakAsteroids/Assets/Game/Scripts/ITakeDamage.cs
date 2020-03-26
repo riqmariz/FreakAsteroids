@@ -1,4 +1,4 @@
 ﻿internal interface ITakeDamage
 {
-    void TakeDamage(int value);
+   void TakeDamage(int value);
 }
