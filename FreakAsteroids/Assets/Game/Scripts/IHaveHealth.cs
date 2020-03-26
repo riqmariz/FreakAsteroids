@@ -2,7 +2,7 @@
 using System.Numerics;
 using UnityEngine.Experimental.GlobalIllumination;
 
-internal interface IHealth : ITakeDamage
+internal interface IHaveHealth : ITakeDamage
 {
     int Health { get; }
     event System.Action<float> OnHPChanged;

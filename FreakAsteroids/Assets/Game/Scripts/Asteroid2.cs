@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-public class Asteroid2 : MonoBehaviour, IHealth
+public class Asteroid2 : MonoBehaviour, IHaveHealth
 {
     [SerializeField]
     private float minSpeed;
@@ -126,7 +126,7 @@ public class Asteroid2 : MonoBehaviour, IHealth
     {
         if (other.CompareTag("Player"))
         {
-            other.GetComponent<IHealth>().TakeDamage(1);
+            other.GetComponent<IHaveHealth>().TakeDamage(1);
         }
     }
 }
