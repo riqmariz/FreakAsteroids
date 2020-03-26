@@ -6,6 +6,8 @@ public class ShipWeapon : MonoBehaviour
     private ILauncher _launcher;
 
     [SerializeField] 
+    private Transform weaponMountPoint;
+    [SerializeField] 
     private float fireRefreshRate = 0.5f;
     private float _nextFireTime;
     private void Awake()
@@ -23,6 +25,11 @@ public class ShipWeapon : MonoBehaviour
         }
     }
 
+    public Transform FirePoint()
+    {
+        return weaponMountPoint;
+    }
+    
     private bool CanFire()
     {
         return Time.time >= _nextFireTime;

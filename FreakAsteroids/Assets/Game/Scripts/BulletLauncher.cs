@@ -11,7 +11,7 @@ public class BulletLauncher : MonoBehaviour,ILauncher
     
     public void Launch(ShipWeapon weapon)
     {
-        var bullet = Instantiate(bulletPrefab);
+        var bullet = Instantiate(bulletPrefab,weapon.FirePoint().position,transform.rotation);
         bullet.Launch(weapon.transform.up);
     }
 }

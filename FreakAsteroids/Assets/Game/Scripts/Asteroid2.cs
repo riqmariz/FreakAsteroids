@@ -61,7 +61,6 @@ public class Asteroid2 : MonoBehaviour, IHealth
         Vector2 speed = new Vector2(randomSpeedX,randomSpeedY);
         Vector2 dir = new Vector2(dirX,dirY);
        Debug.Log("speed: "+speed);
-       Debug.Log("dir: "+dir);
         _rb.AddForce(dir * speed, ForceMode2D.Impulse);
     }
 
