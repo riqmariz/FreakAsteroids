@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class ShipHaveHealth : MonoBehaviour, IHaveHealth
+public class ShipHealth : MonoBehaviour, IHaveHealth
 {
     [SerializeField]
     private int health = 3;
