@@ -12,8 +12,7 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
     [SerializeField]
     private float maxSpeed;
 
-    [SerializeField] 
-    private float maxRotation;
+    [SerializeField] protected float maxRotation;
 
     public int Generation { get; set; }
 
@@ -21,11 +20,12 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
     private Collider2D _collider2D;
     private float _rotation;
 
-    protected int health = 1;
+    [SerializeField]
+    private int hitPoints = 1;
     public int Health
     {
-        get { return health; }
-        set { health = value; }
+        get { return hitPoints; }
+        set { hitPoints = value; }
     }
 
     public event Action<float> OnHPChanged = delegate { };
@@ -37,13 +37,13 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
         _collider2D = GetComponent<Collider2D>();
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         ApplyForceInARandomDirection();
-        _rotation = RandomRotation();
+        _rotation = GetAsteroidRotation();
     }
 
-    private float RandomRotation()
+    protected virtual float GetAsteroidRotation()
     {
         return Random.Range(-maxRotation, maxRotation);
     }
@@ -60,9 +60,8 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
         float randomSpeedX = Random.Range(minSpeed, maxSpeed);
         float randomSpeedY = Random.Range(minSpeed, maxSpeed);
         
-       var magnitude = 1;
-        Vector2 speed = new Vector2(randomSpeedX,randomSpeedY) * magnitude;
-       Debug.Log("speed: "+speed);
+        Vector2 speed = new Vector2(randomSpeedX,randomSpeedY);
+        Debug.Log("speed: "+speed);
         Vector2 dir = new Vector2(dirX,dirY);
        
        _rb.AddForce(dir * speed, ForceMode2D.Impulse);
@@ -84,19 +83,19 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
     }
 
 
-    public void TakeDamage(int value)
+    public virtual void TakeDamage(int value)
     {
-        health -= value;
-        OnHPChanged(health);
-        if (health <= 0)
+        hitPoints -= value;
+        OnHPChanged(hitPoints);
+        if (hitPoints <= 0)
         {
+            OnDied();
             DestroyAsteroid();
         }
     }
 
-    private void DestroyAsteroid()
+    protected virtual void DestroyAsteroid()
     {
-        OnDied();
         if (Generation < 3)
         {
             CreateSmallAsteriods(2);
@@ -120,7 +119,6 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
             asteroidClone.transform.localScale = localScale;
             asteroidClone.GetComponent<Asteroid2>().Generation = newGeneration;
             asteroidClone.SetActive(true);
-            
         }
     }
 
