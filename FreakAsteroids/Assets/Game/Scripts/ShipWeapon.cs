@@ -1,18 +1,16 @@
 ﻿using System;
 using UnityEngine;
 
-public class ShipWeapon : MonoBehaviour
+public class ShipWeapon : MonoBehaviour, IOnLaunch
 {
-    private ILauncher _launcher;
-
     [SerializeField] 
     private Transform weaponMountPoint;
     [SerializeField] 
     private float fireRefreshRate = 0.5f;
     private float _nextFireTime;
+    public event Action<ShipWeapon> OnLaunch = delegate(ShipWeapon weapon) {};
     private void Awake()
     {
-        _launcher = GetComponent<ILauncher>();
         GetComponent<ShipInput>().OnFire += FireWeapon;
     }
 
@@ -21,7 +19,7 @@ public class ShipWeapon : MonoBehaviour
         if (CanFire())
         {
             _nextFireTime = Time.time + fireRefreshRate;
-            _launcher.Launch(this);
+            OnLaunch(this);
         }
     }
 
@@ -34,5 +32,5 @@ public class ShipWeapon : MonoBehaviour
     {
         return Time.time >= _nextFireTime;
     }
-    
+
 }

@@ -5,6 +5,11 @@ public class FreakAsteroid2 : Asteroid2
 {
     private int _maxHitsPoints;
     private Vector3 _originalLocalScale;
+
+    [Header("PowerUp")] 
+    [SerializeField] 
+    private GameObject powerUp;
+
     protected override void Start()
     {
         base.Start();
@@ -23,14 +28,14 @@ public class FreakAsteroid2 : Asteroid2
 
     protected override void DestroyAsteroid()
     {
-       // ReleasePowerUp();
-        
-        Destroy(gameObject,0.01f);
+       DropPowerUp();
+       Destroy(gameObject,0.01f);
     }
 
-    private void ReleasePowerUp()
+    private void DropPowerUp()
     {
-        throw new System.NotImplementedException();
+        var powerUpRef = Instantiate(powerUp, transform.position, Quaternion.identity);
+        powerUpRef.GetComponent<IPowerUp>().Drop(direction);
     }
 
     private void Resize(int value)

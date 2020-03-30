@@ -7,6 +7,7 @@ using Vector3 = UnityEngine.Vector3;
 
 public class Asteroid2 : MonoBehaviour, IHaveHealth
 {
+    [Header("Asteroid Movement")]
     [SerializeField]
     private float minSpeed;
     [SerializeField]
@@ -14,12 +15,7 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
 
     [SerializeField] protected float maxRotation;
 
-    public int Generation { get; set; }
-
-    private Rigidbody2D _rb;
-    private Collider2D _collider2D;
-    private float _rotation;
-
+    [Header("Asteroid HitPoints")]
     [SerializeField]
     private int hitPoints = 1;
     public int Health
@@ -27,11 +23,18 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
         get { return hitPoints; }
         set { hitPoints = value; }
     }
+    public int Generation { get; set; }
 
+    private Rigidbody2D _rb;
+    private Collider2D _collider2D;
+    private float _rotation;
+    
+    protected Vector3 direction;
+    
     public event Action<float> OnHPChanged = delegate { };
     public event Action OnDied = delegate { };
     
-    private void Awake()
+    protected virtual void Awake()
     {
         _rb =GetComponent<Rigidbody2D>();
         _collider2D = GetComponent<Collider2D>();
@@ -62,9 +65,9 @@ public class Asteroid2 : MonoBehaviour, IHaveHealth
         
         Vector2 speed = new Vector2(randomSpeedX,randomSpeedY);
         Debug.Log("speed: "+speed);
-        Vector2 dir = new Vector2(dirX,dirY);
+        direction = new Vector2(dirX,dirY);
        
-       _rb.AddForce(dir * speed, ForceMode2D.Impulse);
+       _rb.AddForce(direction * speed, ForceMode2D.Impulse);
     }
 
 

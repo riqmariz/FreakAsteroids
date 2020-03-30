@@ -1,11 +1,18 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEditor.VersionControl;
+using UnityEngine;
 
-public class ThreeBulletLauncher : BulletLauncher
+public class SideBulletsLauncher : Launcher
 {
+    [Header("Side Bullet Prefab")] 
+    [SerializeField]
+    private NormalBullet bulletPrefab;
+    
     [SerializeField] private float angleBetweenBullets = 45f;
-    public override void Launch(ShipWeapon weapon)
+    
+    private IOnLaunch _onLaunch;
+    protected override void Launch(ShipWeapon weapon)
     {
-        base.Launch(weapon);
         var rotation = transform.rotation;
         var weaponDirection = weapon.transform.up;
 
@@ -19,4 +26,5 @@ public class ThreeBulletLauncher : BulletLauncher
         var rightBulletDirection =  Quaternion.Euler(0,0,-angleBetweenBullets) * weaponDirection;
         bulletRight.Launch(rightBulletDirection);
     }
+    
 }

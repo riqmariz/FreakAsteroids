@@ -4,7 +4,7 @@ using System.Numerics;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
-public class Bullet2 : MonoBehaviour
+public class NormalBullet : MonoBehaviour
 {
     [SerializeField] 
     private float bulletSpeed = 15f;
@@ -14,6 +14,7 @@ public class Bullet2 : MonoBehaviour
     
     private Rigidbody2D _rb;
     private float _willSelfDestruct;
+    
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
