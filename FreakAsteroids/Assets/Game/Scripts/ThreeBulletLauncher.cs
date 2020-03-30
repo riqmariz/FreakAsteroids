@@ -8,7 +8,6 @@ public class ThreeBulletLauncher : BulletLauncher
         base.Launch(weapon);
         var rotation = transform.rotation;
         var weaponDirection = weapon.transform.up;
-        
 
         var leftBulletDirection =  Quaternion.Euler(0,0,angleBetweenBullets) * weaponDirection;
         var rotationLeft = Quaternion.Euler(0,0,angleBetweenBullets) * rotation;
