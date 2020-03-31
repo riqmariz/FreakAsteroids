@@ -3,6 +3,10 @@
 internal interface IPowerUp
 {
     void Drop(Vector3 direction);
+    GameObject Target { get; set; }
+    float Duration { get; set; }
+    
+    void Apply();
 
-    void Buff(GameObject player);
+    void Remove();
 }

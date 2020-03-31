@@ -10,8 +10,15 @@ public class PowerUpSideBullet : MonoBehaviour, IPowerUp
     [Header("PowerUp Time")] 
     [SerializeField]
     private float timeToSelfDestruct = 4f;
+
+    [SerializeField] 
+    private float buffDuration = 5f;
     
+    public GameObject Target { get => _target; set => _target = value; }
+    public float Duration { get => buffDuration; set => buffDuration = value; }
+
     private Rigidbody2D _rb;
+    private GameObject _target;
     private float _willSelfDestruct;
     public void Awake()
     {
@@ -33,24 +40,36 @@ public class PowerUpSideBullet : MonoBehaviour, IPowerUp
         _willSelfDestruct = Time.time + timeToSelfDestruct;
     }
 
-    public void Buff(GameObject ship)
+
+    public void Apply()
     {
-        if (ship.GetComponent<SideBulletsLauncher>() == null)
-        {
-            ship.AddComponent<SideBulletsLauncher>();
-        }
-        else
-        {
-            ship.GetComponent<SideBulletsLauncher>().enabled = true;
-        }
+        Timers.CreateClock(Target, Duration, () =>
+            {
+                Debug.Log("Starting SideBulletsPowerUp");
+                var weapon = Target.GetComponent<SideBulletsLauncher>();
+                if (weapon == null) Target.AddComponent<SideBulletsLauncher>();
+                weapon.enabled = true;
+            },
+            () => Remove()
+        );
     }
 
+    public void Remove()
+    {
+        Debug.Log("Removing SideBulletsPowerUp");
+        var weapon = Target.GetComponent<SideBulletsLauncher>();
+        Destroy(weapon);
+    }
+
+    
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            Buff(other.gameObject);
+            _target = other.gameObject;
+            Apply();
             Destroy(gameObject);
         }
     }
+
 }
